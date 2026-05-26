@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Annual Exam Form 2026 | Kids Play School</title>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #eef2f7;
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+            padding: 2rem 1rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* main form card */
+        .form-card {
+            max-width: 1000px;
+            width: 100%;
+            background: white;
+            border-radius: 32px;
+            box-shadow: 0 20px 35px -12px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        .browser-bar {
+            background: #f1f5f9;
+            padding: 10px 20px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .browser-dots {
+            display: flex;
+            gap: 8px;
+        }
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: #cbd5e1;
+        }
+        .dot:nth-child(1) { background-color: #ef4444; }
+        .dot:nth-child(2) { background-color: #f59e0b; }
+        .dot:nth-child(3) { background-color: #10b981; }
+
+        .browser-url {
+            background: white;
+            padding: 5px 14px;
+            border-radius: 40px;
+            font-size: 0.8rem;
+            font-family: monospace;
+            margin-left: 12px;
+            border: 1px solid #e2e8f0;
+            flex: 1;
+        }
+
+        .form-container {
+            padding: 28px 32px;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #1e4a5f;
+            border-left: 5px solid #2c7a6e;
+            padding-left: 18px;
+            margin-bottom: 6px;
+        }
+
+        .year-badge {
+            font-size: 0.8rem;
+            background: #eef2ff;
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 40px;
+            color: #1e4a5f;
+            margin-left: 20px;
+            margin-bottom: 24px;
+        }
+
+        .form-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .row-dual {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .input-field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .input-field label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: #2c3e50;
+        }
+
+        input, select {
+            font-family: inherit;
+            font-size: 0.95rem;
+            padding: 12px 14px;
+            border: 1px solid #cfdfe9;
+            border-radius: 16px;
+            background: white;
+            width: 100%;
+            outline: none;
+        }
+
+        input:focus, select:focus {
+            border-color: #2c7a6e;
+            box-shadow: 0 0 0 3px rgba(44,122,110,0.2);
+        }
+
+        .custom-file {
+            position: relative;
+            width: 100%;
+        }
+        .custom-file input {
+            opacity: 0;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+        .file-label {
+            display: flex;
+            justify-content: space-between;
+            background: #f8fafc;
+            border: 1px dashed #9bb5c4;
+            border-radius: 16px;
+            padding: 12px 14px;
+            cursor: pointer;
+        }
+
+        .preview-section {
+            background: #f9fbfd;
+            border-radius: 24px;
+            padding: 1.2rem;
+            border: 1px solid #e4edf2;
+        }
+
+        .preview-title {
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: #1e4a5f;
+            border-left: 4px solid #2c7a6e;
+            padding-left: 14px;
+        }
+
+        .preview-container {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .preview-item {
+            flex: 1;
+            text-align: center;
+            background: white;
+            border-radius: 20px;
+            padding: 1rem;
+            border: 1px solid #eaf0f3;
+        }
+
+        .image-preview {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto;
+            background: #f1f5f9;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .image-preview img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .btn-submit {
+            background: linear-gradient(105deg, #1f5e56, #2c7a6e);
+            border: none;
+            width: 100%;
+            padding: 16px;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 40px;
+            color: white;
+            cursor: pointer;
+            margin-top: 12px;
+        }
+
+        .note-text {
+            font-size: 0.7rem;
+            color: #5b7c8a;
+            text-align: center;
+            margin-top: 12px;
+        }
+
+        /* print page style */
+        .print-page {
+            background: white;
+            padding: 2rem;
+            border-radius: 24px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .print-header {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+            border-bottom: 2px dashed #ccc;
+            padding-bottom: 1rem;
+        }
+
+        .applicant-details {
+            flex: 2;
+        }
+
+        .images-right {
+            flex: 1;
+            text-align: right;
+        }
+
+        .images-right div {
+            margin-bottom: 1rem;
+        }
+
+        .images-right img {
+            width: 120px;
+            height: 120px;
+            object-fit: contain;
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            background: #f9f9f9;
+        }
+
+        .reg-number {
+            background: #eef2ff;
+            padding: 8px 16px;
+            border-radius: 40px;
+            display: inline-block;
+            font-weight: bold;
+            margin: 1rem 0;
+        }
+
+        .print-btn {
+            background: #1e4a5f;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 40px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 700px) {
+            .form-container { padding: 20px; }
+            .row-dual { grid-template-columns: 1fr; gap: 1rem; }
+            .preview-container { flex-direction: column; align-items: center; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="form-card" id="mainFormCard">
+    <div class="browser-bar">
+        <div class="browser-dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+        <div class="browser-url">https://exams.kidsplayschool.in/form2026</div>
+    </div>
+    <div class="form-container" id="formContainer">
+        <h1>📋 Annual Exam Form 2026</h1>
+        <div class="year-badge">🏫 Kids Play School, Loha (Madhubani)</div>
+
+        <form id="examForm">
+            <div class="form-grid">
+                <div class="input-field">
+                    <label>Candidate Name *</label>
+                    <input type="text" id="candidateName" required>
+                </div>
+                <div class="row-dual">
+                    <div class="input-field"><label>Gender *</label><select id="gender"><option>Male</option><option>Female</option><option>Other</option></select></div>
+                    <div class="input-field"><label>Date of Birth *</label><input type="date" id="dob" required></div>
+                </div>
+                <div class="row-dual">
+                    <div class="input-field"><label>Father's Name *</label><input type="text" id="fatherName" required></div>
+                    <div class="input-field"><label>Mother's Name *</label><input type="text" id="motherName" required></div>
+                </div>
+                <div class="row-dual">
+                    <div class="input-field"><label>Category *</label><select id="category"><option>General</option><option>OBC</option><option>SC</option><option>ST</option><option>EWS</option></select></div>
+                    <div class="input-field"><label>Religion *</label><select id="religion"><option>Hinduism</option><option>Islam</option><option>Sikhism</option><option>Christianity</option><option>Other</option></select></div>
+                </div>
+                <!-- School Name fixed dropdown -->
+                <div class="input-field">
+                    <label>School Name *</label>
+                    <select id="schoolName">
+                        <option>Kids Play School, Loha (Madhubani)</option>
+                    </select>
+                </div>
+                <div class="row-dual">
+                    <div class="input-field"><label>Class *</label><input type="text" id="className" placeholder="e.g., 10, 12" required></div>
+                    <div class="input-field"><label>Class Roll Number *</label><input type="text" id="rollNumber" required></div>
+                </div>
+                <div class="input-field"><label>Contact Number (Optional)</label><input type="tel" id="contactNumber"></div>
+
+                <div class="row-dual">
+                    <div class="input-field"><label>📸 Upload Photo</label>
+                        <div class="custom-file"><input type="file" id="photoUpload" accept="image/*"><div class="file-label"><span>Choose Photo</span><span>📷</span></div></div>
+                    </div>
+                    <div class="input-field"><label>✍️ Upload Signature</label>
+                        <div class="custom-file"><input type="file" id="signatureUpload" accept="image/*"><div class="file-label"><span>Choose Signature</span><span>🖊️</span></div></div>
+                    </div>
+                </div>
+
+                <div class="preview-section">
+                    <div class="preview-title">🔍 Preview (Photo & Signature)</div>
+                    <div class="preview-container">
+                        <div class="preview-item"><h4>Photo</h4><div class="image-preview"><img id="photoPreview" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 24 24' fill='none' stroke='gray'%3E%3Crect x='2' y='4' width='20' height='18' rx='2'/%3E%3C/svg%3E"></div><span id="photoStatus">No file</span></div>
+                        <div class="preview-item"><h4>Signature</h4><div class="image-preview"><img id="signaturePreview" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 24 24' fill='none' stroke='gray'%3E%3Cpath d='M3 16l5-5 3 3 9-9'/%3E%3C/svg%3E"></div><span id="signatureStatus">No file</span></div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-submit">✅ Submit Exam Form</button>
+                <div class="note-text">After upload, preview updates. On submit you'll get unique Registration Number & Print page.</div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Firebase configuration
+    const firebaseConfig = {
+        databaseURL: "https://guffu-ed226-default-rtdb.firebaseio.com/"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
+
+    // Image preview + resize to base64 (to store)
+    function resizeAndConvert(file, maxWidth=200) {
+        return new Promise((resolve) => {
+            if (!file) { resolve(null); return; }
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    let width = img.width;
+                    let height = img.height;
+                    if (width > maxWidth) {
+                        height = (height * maxWidth) / width;
+                        width = maxWidth;
+                    }
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+                    resolve(canvas.toDataURL('image/jpeg', 0.8));
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+
+    // preview display
+    const photoInput = document.getElementById('photoUpload');
+    const sigInput = document.getElementById('signatureUpload');
+    const photoPreviewImg = document.getElementById('photoPreview');
+    const sigPreviewImg = document.getElementById('signaturePreview');
+    const photoStatusSpan = document.getElementById('photoStatus');
+    const sigStatusSpan = document.getElementById('signatureStatus');
+
+    photoInput.addEventListener('change', (e) => {
+        if (e.target.files[0]) {
+            const file = e.target.files[0];
+            const url = URL.createObjectURL(file);
+            photoPreviewImg.src = url;
+            photoStatusSpan.innerText = file.name;
+        } else { photoPreviewImg.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 24 24' fill='none' stroke='gray'%3E%3Crect x='2' y='4' width='20' height='18' rx='2'/%3E%3C/svg%3E"; photoStatusSpan.innerText = "No file"; }
+    });
+    sigInput.addEventListener('change', (e) => {
+        if (e.target.files[0]) {
+            const file = e.target.files[0];
+            const url = URL.createObjectURL(file);
+            sigPreviewImg.src = url;
+            sigStatusSpan.innerText = file.name;
+        } else { sigPreviewImg.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 24 24' fill='none' stroke='gray'%3E%3Cpath d='M3 16l5-5 3 3 9-9'/%3E%3C/svg%3E"; sigStatusSpan.innerText = "No file"; }
+    });
+
+    // generate unique registration number RE + 7 digits
+    function generateRegNumber() {
+        const randomDigits = Math.floor(1000000 + Math.random() * 9000000).toString(); // 7 digits
+        return "RE" + randomDigits;
+    }
+
+    // submit form
+    document.getElementById('examForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        // required fields check
+        const candidate = document.getElementById('candidateName').value.trim();
+        if (!candidate) { alert("Candidate Name required"); return; }
+        const father = document.getElementById('fatherName').value.trim();
+        if (!father) { alert("Father's Name required"); return; }
+        const mother = document.getElementById('motherName').value.trim();
+        if (!mother) { alert("Mother's Name required"); return; }
+        const school = document.getElementById('schoolName').value;
+        const className = document.getElementById('className').value.trim();
+        if (!className) { alert("Class required"); return; }
+        const roll = document.getElementById('rollNumber').value.trim();
+        if (!roll) { alert("Roll Number required"); return; }
+        const dob = document.getElementById('dob').value;
+        if (!dob) { alert("DOB required"); return; }
+
+        // images
+        const photoFile = photoInput.files[0];
+        const sigFile = sigInput.files[0];
+        if (!photoFile) { alert("Please upload Photo"); return; }
+        if (!sigFile) { alert("Please upload Signature"); return; }
+
+        // convert images to base64 (resized)
+        const photoBase64 = await resizeAndConvert(photoFile, 250);
+        const sigBase64 = await resizeAndConvert(sigFile, 250);
+
+        const formData = {
+            registrationNumber: generateRegNumber(),
+            candidateName: candidate,
+            gender: document.getElementById('gender').value,
+            dob: dob,
+            fatherName: father,
+            motherName: mother,
+            category: document.getElementById('category').value,
+            religion: document.getElementById('religion').value,
+            schoolName: school,
+            className: className,
+            rollNumber: roll,
+            contactNumber: document.getElementById('contactNumber').value || "",
+            photoBase64: photoBase64,
+            signatureBase64: sigBase64,
+            timestamp: Date.now()
+        };
+
+        // store in Firebase
+        try {
+            const newRef = database.ref('exam_submissions').push();
+            await newRef.set(formData);
+            // show print page
+            showPrintPage(formData);
+        } catch (error) {
+            alert("Submission failed: " + error.message);
+        }
+    });
+
+    function showPrintPage(data) {
+        const mainCard = document.getElementById('mainFormCard');
+        const formContainer = document.getElementById('formContainer');
+        // build print layout
+        const printHTML = `
+            <div class="print-page" id="printArea">
+                <div class="print-header">
+                    <div class="applicant-details">
+                        <h2>🎓 Applicant's Details</h2>
+                        <p><strong>Registration No:</strong> <span class="reg-number">${data.registrationNumber}</span></p>
+                        <p><strong>Candidate Name:</strong> ${data.candidateName}</p>
+                        <p><strong>Gender:</strong> ${data.gender} &nbsp; | &nbsp; <strong>DOB:</strong> ${data.dob}</p>
+                        <p><strong>Father's Name:</strong> ${data.fatherName} &nbsp; | &nbsp; <strong>Mother's Name:</strong> ${data.motherName}</p>
+                        <p><strong>Category:</strong> ${data.category} &nbsp; | &nbsp; <strong>Religion:</strong> ${data.religion}</p>
+                        <p><strong>School:</strong> ${data.schoolName}</p>
+                        <p><strong>Class:</strong> ${data.className} &nbsp; | &nbsp; <strong>Roll Number:</strong> ${data.rollNumber}</p>
+                        <p><strong>Contact:</strong> ${data.contactNumber || "Not provided"}</p>
+                    </div>
+                    <div class="images-right">
+                        <div><strong>📸 Photo</strong><br><img src="${data.photoBase64}" alt="Photo"></div>
+                        <div style="margin-top: 16px;"><strong>✍️ Signature</strong><br><img src="${data.signatureBase64}" alt="Signature"></div>
+                    </div>
+                </div>
+                <hr>
+                <p style="text-align:center; margin-top:20px;">✓ This is a system generated registration slip. Keep for future reference.</p>
+                <div style="text-align:center; margin-top:20px;">
+                    <button class="print-btn" onclick="window.print()">🖨️ Print / Save as PDF</button>
+                    <button class="print-btn" style="background:#4b6e7e;" onclick="location.reload()">➕ Fill New Form</button>
+                </div>
+            </div>
+        `;
+        formContainer.innerHTML = printHTML;
+        // also ensure any global print function works
+        window.showPrintPage = null;
+    }
+</script>
+</body>
+</html>
